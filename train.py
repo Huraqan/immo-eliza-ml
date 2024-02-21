@@ -44,9 +44,22 @@ def train():
     # Load the data
     data = pd.read_csv("data/properties.csv")
     
+    # EPC value remapping
+    # epc_mapping = {
+    #     "G": 0,
+    #     "F": 1,
+    #     "E": 2,
+    #     "D": 3,
+    #     "C": 4,
+    #     "B": 5,
+    #     "A": 6,
+    #     "A+": 7,
+    #     "A++": 8,
+    # }
+    # data["epc"] = data["epc"].map(epc_mapping).astype(int)
+    
     # Define features to use
     num_features = [
-        "price",
         "total_area_sqm",
         "surface_land_sqm",
         "nbr_frontages",
@@ -89,20 +102,6 @@ def train():
     X_train[num_features] = imputer.transform(X_train[num_features])
     X_test[num_features] = imputer.transform(X_test[num_features])
     
-    # EPC value remapping
-    # epc_mapping = {
-    #     "G": 0,
-    #     "F": 1,
-    #     "E": 2,
-    #     "D": 3,
-    #     "C": 4,
-    #     "B": 5,
-    #     "A": 6,
-    #     "A+": 7,
-    #     "A++": 8,
-    # }
-
-    # data["epc"] = data["epc"].map(epc_mapping).astype(int)
     
     # Convert categorical columns with one-hot encoding using OneHotEncoder
     enc = OneHotEncoder()
