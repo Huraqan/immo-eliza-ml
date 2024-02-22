@@ -44,27 +44,15 @@ def train():
     # Load the data
     data = pd.read_csv("data/properties.csv")
     
-    # EPC value remapping
-    # epc_mapping = {
-    #     "G": 0,
-    #     "F": 1,
-    #     "E": 2,
-    #     "D": 3,
-    #     "C": 4,
-    #     "B": 5,
-    #     "A": 6,
-    #     "A+": 7,
-    #     "A++": 8,
-    # }
-    # data["epc"] = data["epc"].map(epc_mapping).astype(int)
-    
     # Define features to use
     num_features = [
         "total_area_sqm",
         "surface_land_sqm",
         "nbr_frontages",
         "primary_energy_consumption_sqm",
+        "nbr_bedrooms",
         "terrace_sqm",
+        "cadastral_income",
         "garden_sqm",
     ]
     fl_features = [
@@ -73,6 +61,8 @@ def train():
         "fl_furnished",
         "fl_open_fire",
         "fl_double_glazing",
+        "fl_swimming_pool",
+        "fl_floodzone",
     ]
     cat_features = [
         "equipped_kitchen",
@@ -80,9 +70,10 @@ def train():
         "subproperty_type",
         "region",
         "province",
-        # "locality",
+        "locality",
         "epc",
         "heating_type",
+        "state_building",
     ]
 
     # Split the data into features and target
@@ -91,8 +82,15 @@ def train():
 
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.20, random_state=505
+        X, y, test_size=0.20, random_state=42
     )
+    
+    print("\n")
+    print(type(X_train))
+    print(type(X_test))
+    print(type(y_train))
+    print(type(y_test))
+    print("\n")
 
     # Impute missing values using SimpleImputer
     # Many possible ways, see https://en.wikipedia.org/wiki/Imputation_(statistics)
@@ -108,7 +106,7 @@ def train():
     enc.fit(X_train[cat_features])
     X_train_cat = enc.transform(X_train[cat_features]).toarray()
     X_test_cat = enc.transform(X_test[cat_features]).toarray()
-
+    
     # Combine the numerical and one-hot encoded categorical columns
     X_train = pd.concat(
         [
@@ -117,7 +115,7 @@ def train():
         ],
         axis=1,
     )
-
+    
     X_test = pd.concat(
         [
             X_test[num_features + fl_features].reset_index(drop=True),
@@ -125,19 +123,19 @@ def train():
         ],
         axis=1,
     )
-
+    
     print(f"Features: \n {X_train.columns.tolist()}")
-
+    
     # Train the model
     model = LinearRegression()
     model.fit(X_train, y_train)
-
+    
     # Evaluate the model
     train_score = r2_score(y_train, model.predict(X_train))
     test_score = r2_score(y_test, model.predict(X_test))
     print(f"Train R² score: {train_score}")
     print(f"Test R² score: {test_score}")
-
+    
     # Save the model
     artifacts = {
         "features": {
