@@ -82,15 +82,8 @@ def train():
 
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.20, random_state=42
+        X, y, test_size=0.20, random_state=69420
     )
-    
-    print("\n")
-    print(type(X_train))
-    print(type(X_test))
-    print(type(y_train))
-    print(type(y_test))
-    print("\n")
 
     # Impute missing values using SimpleImputer
     # Many possible ways, see https://en.wikipedia.org/wiki/Imputation_(statistics)
